@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useInsertionEffect, useRef, useState } from "react";
 import "./App.css";
 import { Song } from "./Song";
 
@@ -42,7 +42,7 @@ function App() {
   }, [musicIndex]);
 
   useEffect(() => {
-    if (isPlaying) {
+    if (!isPlaying) {
       pauseMusic();
     } else {
       playMusic();
@@ -58,7 +58,10 @@ function App() {
   function playMusic() {
     playBtn.current.classList.replace("fa-play", "fa-pause");
     playBtn.current.setAttribute("title", "Pause");
-    music.play();
+    music.play().catch((err) => {
+      setIsPlaying(false);
+      pauseMusic();
+    });
   }
 
   function loadMusic(song: Song) {
@@ -69,11 +72,11 @@ function App() {
     background.current.src = song.cover;
   }
 
-  // function changeMusic(direction) {
-  //   setMusicIndex((musicIndex + direction + songs.length) % songs.length);
-  //   loadMusic(songs[musicIndex]);
-  //   playMusic();
-  // }
+  function changeMusic(direction) {
+    setMusicIndex((musicIndex + direction + songs.length) % songs.length);
+    loadMusic(songs[musicIndex]);
+    playMusic();
+  }
 
   const [time, setTime] = useState(0);
   music.addEventListener("timeupdate", (e) => setTime(e.timeStamp));
@@ -135,7 +138,7 @@ function App() {
         <div className="player-controls">
           <i
             className="fa-solid fa-backward"
-            // onClick={() => changeMusic(-1)}
+            onClick={() => changeMusic(-1)}
             title="Previous"
           ></i>
           <i
@@ -146,7 +149,7 @@ function App() {
           ></i>
           <i
             className="fa-solid fa-forward"
-            // onClick={() => changeMusic(1)}
+            onClick={() => changeMusic(1)}
             title="Next"
           ></i>
         </div>
