@@ -76,7 +76,6 @@ function App() {
   // }
 
   const [time, setTime] = useState(0);
-
   music.addEventListener("timeupdate", (e) => setTime(e.timeStamp));
 
   useEffect(() => {
@@ -85,22 +84,29 @@ function App() {
 
   function updateProgressBar() {
     const { currentTime, duration } = music;
-
     const progressPercent = (currentTime / duration) * 100;
     progress.current.style.width = `${progressPercent}%`;
     const formatTime = (time) => String(Math.floor(time)).padStart(2, "0");
-    durationEl.current.textContent = `${formatTime(duration / 60)}:${formatTime(
-      duration % 60
-    )}`;
+
     currentTimeEl.current.textContent = `${formatTime(
       currentTime / 60
     )}:${formatTime(currentTime % 60)}`;
+
+    if (isNaN(duration)) {
+      durationEl.current.textContent = "00:00";
+    } else {
+      durationEl.current.textContent = `${formatTime(
+        duration / 60
+      )}:${formatTime(duration % 60)}`;
+    }
   }
 
-  function setProgressBar(e: any) {
-    const width = e.clientWidth;
-    const clickX = e.offsetX;
-    music.currentTime = (clickX / width) * music.duration;
+  function setProgressBar(e) {
+    const width = playerProgress.current?.clientWidth;
+    const clickX = e.nativeEvent.offsetX;
+    const currentTime = (clickX / width) * music.duration;
+    music.currentTime = currentTime;
+    setMusic(music);
   }
 
   return (
@@ -114,31 +120,35 @@ function App() {
         </div>
         <h2 ref={title}></h2>
         <h3 ref={artist}></h3>
-        <div className="player-progress" onClick={(e) => setProgressBar(e)}>
+        <div
+          className="player-progress"
+          ref={playerProgress}
+          onClick={(e) => setProgressBar(e)}
+        >
           <div className="progress" ref={progress}>
             <div className="music-duration">
               <span ref={currentTimeEl}></span>
               <span ref={durationEl}></span>
             </div>
           </div>
-          <div className="player-controls">
-            <i
-              className="fa-solid fa-backward"
-              // onClick={() => changeMusic(-1)}
-              title="Previous"
-            ></i>
-            <i
-              ref={playBtn}
-              className="fa-solid fa-play play-button"
-              onClick={() => setIsPlaying((prev) => !prev)}
-              title="Play"
-            ></i>
-            <i
-              className="fa-solid fa-forward"
-              // onClick={() => changeMusic(1)}
-              title="Next"
-            ></i>
-          </div>
+        </div>
+        <div className="player-controls">
+          <i
+            className="fa-solid fa-backward"
+            // onClick={() => changeMusic(-1)}
+            title="Previous"
+          ></i>
+          <i
+            ref={playBtn}
+            className="fa-solid fa-play play-button"
+            onClick={() => setIsPlaying((prev) => !prev)}
+            title="Play"
+          ></i>
+          <i
+            className="fa-solid fa-forward"
+            // onClick={() => changeMusic(1)}
+            title="Next"
+          ></i>
         </div>
       </div>
     </>
