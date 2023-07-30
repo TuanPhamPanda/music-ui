@@ -1,45 +1,98 @@
-import { useEffect, useInsertionEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { Song } from "./Song";
+import axios from "./apis/axios";
+import ListMusic from "./components/ListMusic/ListMusic";
+import { convertMinutesToTime } from "./utils/fn";
 
 function App() {
-  const songs: Array<Song> = [
-    new Song(
-      "src/assets/1.mp3",
-      "The Charmer's Call",
-      "src/assets/1.jpg",
-      "Hanu Dixit"
-    ),
-    new Song(
-      "src/assets/2.mp3",
-      "You Will Never See Me Coming",
-      "src/assets/2.jpg",
-      "NEFFEX"
-    ),
-    new Song("src/assets/3.mp3", "Intellect", "src/assets/3.jpg", "Yung Logos"),
-  ];
-
+  const [songs, setSongs] = useState<Array<Song>>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [musicIndex, setMusicIndex] = useState(0);
-  const [music, setMusic] = useState(new Audio(songs[musicIndex].path));
+  const [sourceMusic, setSourceMusic] = useState("");
+  const [music, setMusic] = useState(new Audio(sourceMusic));
+  const image = useRef<HTMLImageElement>(null);
+  const title = useRef<HTMLDivElement>(null);
+  const artist = useRef<HTMLDivElement>(null);
+  const currentTimeEl = useRef<HTMLDivElement>(null);
+  const durationEl = useRef<HTMLDivElement>(null);
+  const progress = useRef<HTMLDivElement>(null);
+  const playerProgress = useRef<HTMLDivElement>(null);
+  const playBtn = useRef<HTMLDivElement>(null);
+  const background = useRef<HTMLImageElement>(null);
+  const [arrayEncodeID, setArrayEncodeID] = useState<Array<string>>([]);
+  const [time, setTime] = useState(0);
 
   useEffect(() => {
     updateProgressBar();
-  });
-
-  const image = useRef();
-  const title = useRef();
-  const artist = useRef();
-  const currentTimeEl = useRef();
-  const durationEl = useRef();
-  const progress = useRef();
-  const playerProgress = useRef();
-  const playBtn = useRef();
-  const background = useRef();
+  }, []);
 
   useEffect(() => {
-    loadMusic(songs[musicIndex]);
-  }, [musicIndex]);
+    if (songs.length > 0) {
+      axios
+        .get(`${import.meta.env.VITE_SERVER}/${songs[musicIndex]?.path}`)
+        .then((response) => {
+          setSourceMusic(response.data.data["128"]);
+        });
+
+      loadMusic(songs[musicIndex]);
+    }
+  }, [musicIndex, songs]);
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_SERVER}/`).then((value) => {
+      const arrayTemp = value.data.items
+        .filter((item) => item.sectionType === "playlist" && item.items)
+        .map((item) => {
+          const arrayStringTemp = item.items.map((item) => item.encodeId);
+          return arrayStringTemp;
+        });
+      setArrayEncodeID([...new Set([].concat(...arrayTemp))]);
+    });
+  }, []);
+
+  useEffect(() => {
+    const fetchPlaylistData = async () => {
+      const promises = arrayEncodeID.map((item) =>
+        axios.get(`${import.meta.env.VITE_SERVER}/playlist/${item}`)
+      );
+      try {
+        const responses = await Promise.all(promises);
+        const arrayTemp: Song[] = [];
+
+        responses.forEach((response) => {
+          const arrays = response.data.data.song.items;
+          if (arrays.length >= 30 && arrays.length <= 50) {
+            arrays.forEach(
+              (item: {
+                encodeId: string;
+                duration: number;
+                thumbnailM: string;
+                artistsNames: string;
+                title: string;
+              }) => {
+                const { encodeId, duration, thumbnailM, artistsNames, title } =
+                  item;
+                arrayTemp.push(
+                  new Song(encodeId, title, thumbnailM, artistsNames, duration)
+                );
+              }
+            );
+          }
+        });
+
+        setSongs(arrayTemp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchPlaylistData();
+  }, [arrayEncodeID]);
+
+  useEffect(() => {
+    updateProgressBar();
+  }, [time]);
 
   useEffect(() => {
     if (!isPlaying) {
@@ -50,67 +103,92 @@ function App() {
   }, [isPlaying]);
 
   function pauseMusic() {
-    playBtn.current.classList.replace("fa-pause", "fa-play");
-    playBtn.current.setAttribute("title", "Play");
-    music.pause();
+    if (playBtn.current) {
+      playBtn.current.classList.replace("fa-pause", "fa-play");
+      playBtn.current.setAttribute("title", "Play");
+      music.pause();
+    }
   }
 
   function playMusic() {
-    playBtn.current.classList.replace("fa-play", "fa-pause");
-    playBtn.current.setAttribute("title", "Pause");
-    music.play().catch((err) => {
-      setIsPlaying(false);
-      pauseMusic();
-    });
+    if (playBtn.current) {
+      playBtn.current.classList.replace("fa-play", "fa-pause");
+      playBtn.current.setAttribute("title", "Pause");
+      music.play().catch(() => {
+        setIsPlaying(false);
+        pauseMusic();
+      });
+    }
   }
 
   function loadMusic(song: Song) {
-    music.src = song.path;
-    title.current.textContent = song.displayName;
-    artist.current.textContent = song.artist;
-    image.current.src = song.cover;
-    background.current.src = song.cover;
+    if (song) {
+      music.src = sourceMusic;
+
+      if (
+        title.current &&
+        artist.current &&
+        image.current &&
+        background.current
+      ) {
+        title.current.textContent =
+          song.displayName.length > 30
+            ? `${song.displayName.substring(0, 30)}....`
+            : song.displayName;
+        artist.current.textContent =
+          song.artist.length > 35
+            ? `${song.artist.substring(0, 35)}....`
+            : song.artist;
+        image.current.src = song.cover;
+        background.current.src = song.cover;
+      }
+    }
   }
 
-  function changeMusic(direction) {
+  function changeMusic(direction: number) {
+    console.log(direction);
     setMusicIndex((musicIndex + direction + songs.length) % songs.length);
     loadMusic(songs[musicIndex]);
     playMusic();
   }
 
-  const [time, setTime] = useState(0);
-  music.addEventListener("timeupdate", (e) => setTime(e.timeStamp));
-
-  useEffect(() => {
-    updateProgressBar();
-  }, [time]);
-
   function updateProgressBar() {
     const { currentTime, duration } = music;
     const progressPercent = (currentTime / duration) * 100;
-    progress.current.style.width = `${progressPercent}%`;
-    const formatTime = (time) => String(Math.floor(time)).padStart(2, "0");
+    if (progress.current) {
+      progress.current.style.width = `${progressPercent}%`;
+    }
+    const formatTime = (time: number) =>
+      String(Math.floor(time)).padStart(2, "0");
 
-    currentTimeEl.current.textContent = `${formatTime(
-      currentTime / 60
-    )}:${formatTime(currentTime % 60)}`;
+    if (currentTimeEl.current) {
+      currentTimeEl.current.textContent = `${formatTime(
+        currentTime / 60
+      )}:${formatTime(currentTime % 60)}`;
+    }
 
-    if (isNaN(duration)) {
-      durationEl.current.textContent = "00:00";
-    } else {
-      durationEl.current.textContent = `${formatTime(
-        duration / 60
-      )}:${formatTime(duration % 60)}`;
+    if (durationEl.current) {
+      if (songs[musicIndex]) {
+        durationEl.current.textContent = convertMinutesToTime(
+          songs[musicIndex]?.duration
+        );
+      } else {
+        durationEl.current.textContent = "00:00";
+      }
     }
   }
 
-  function setProgressBar(e) {
-    const width = playerProgress.current?.clientWidth;
-    const clickX = e.nativeEvent.offsetX;
-    const currentTime = (clickX / width) * music.duration;
-    music.currentTime = currentTime;
-    setMusic(music);
+  function setProgressBar(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (playerProgress.current) {
+      const width = playerProgress.current.clientWidth;
+      const clickX = e.nativeEvent.offsetX;
+      const currentTime = (clickX / width) * music.duration;
+      music.currentTime = currentTime;
+      setMusic(music);
+    }
   }
+
+  music.addEventListener("timeupdate", (e) => setTime(e.timeStamp));
 
   return (
     <>
@@ -154,6 +232,7 @@ function App() {
           ></i>
         </div>
       </div>
+      <ListMusic onMusicIndex={setMusicIndex} songs={songs} />
     </>
   );
 }

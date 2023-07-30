@@ -1,0 +1,62 @@
+.list-music {
+  position: absolute;
+  width: 400px;
+  right: 20px;
+  top: 48px;
+  bottom: 95px;
+  border-radius: 10px;
+  background-color: white;
+  margin-left: 8px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #9be6f9;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  .music-item {
+    display: flex;
+    gap: 8px;
+    margin-left: 10px;
+    margin-top: 12px;
+
+    img {
+      height: 40px;
+      width: 40px;
+      object-fit: cover;
+      cursor: pointer;
+      &:hover{
+        transform: scale(1.2);
+      }
+    }
+
+    .music-description {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 100%;
+      div {
+        display: flex;
+        gap: 20px;
+      }
+    }
+  }
+}
+
+/* Đổi màu sắc thanh cuộn */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Màu cho cần cuộn */
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: top-left-radius top-right-radius bottom-right-radius
+    bottom-left-radius;
+}
