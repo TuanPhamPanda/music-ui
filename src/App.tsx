@@ -33,6 +33,7 @@ function App() {
         .get(`${import.meta.env.VITE_SERVER}/${songs[musicIndex]?.path}`)
         .then((response) => {
           setSourceMusic(response.data.data["128"]);
+          console.log(response);
         });
 
       loadMusic(songs[musicIndex]);
@@ -124,6 +125,10 @@ function App() {
   function loadMusic(song: Song) {
     if (song) {
       music.src = sourceMusic;
+      if (progress.current) {
+        progress.current.style.width = `0%`;
+      }
+      music.load();
 
       if (
         title.current &&
@@ -146,7 +151,6 @@ function App() {
   }
 
   function changeMusic(direction: number) {
-    console.log(direction);
     setMusicIndex((musicIndex + direction + songs.length) % songs.length);
     loadMusic(songs[musicIndex]);
     playMusic();
