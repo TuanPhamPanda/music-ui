@@ -26,6 +26,10 @@
     margin-left: 10px;
     margin-top: 12px;
 
+    & > :last-child{
+      margin-bottom: 12px;
+    }
+
     img {
       height: 40px;
       width: 40px;

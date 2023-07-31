@@ -9,7 +9,7 @@ function App() {
   const [songs, setSongs] = useState<Array<Song>>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [musicIndex, setMusicIndex] = useState(0);
-  const [sourceMusic, setSourceMusic] = useState("");
+  const [sourceMusic, setSourceMusic] = useState();
   const [music, setMusic] = useState(new Audio(sourceMusic));
   const image = useRef<HTMLImageElement>(null);
   const title = useRef<HTMLDivElement>(null);
@@ -23,25 +23,35 @@ function App() {
   const [arrayEncodeID, setArrayEncodeID] = useState<Array<string>>([]);
   const [time, setTime] = useState(0);
 
-  useEffect(() => {
-    updateProgressBar();
-  }, []);
-
+  //start call api
   useEffect(() => {
     if (songs.length > 0) {
       axios
         .get(`${import.meta.env.VITE_SERVER}/${songs[musicIndex]?.path}`)
         .then((response) => {
-          setSourceMusic(response.data.data["128"]);
-          console.log(response);
+          if (response.data.data["128"]) {
+            setSourceMusic(response.data.data["128"]);
+          }
         });
-
       loadMusic(songs[musicIndex]);
     }
   }, [musicIndex, songs]);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_SERVER}/`).then((value) => {
+    setIsPlaying(false);
+
+    const idTimeout = setTimeout(() => {
+      setIsPlaying(true);
+    }, 1000);
+    return () => {
+      clearTimeout(idTimeout);
+    };
+  }, [musicIndex]);
+
+  music.addEventListener("timeupdate", (e: Event) => setTime(e.timeStamp));
+
+  useEffect(() => {
+    axios.get(`/`).then((value) => {
       const arrayTemp = value.data.items
         .filter((item) => item.sectionType === "playlist" && item.items)
         .map((item) => {
@@ -51,11 +61,10 @@ function App() {
       setArrayEncodeID([...new Set([].concat(...arrayTemp))]);
     });
   }, []);
-
   useEffect(() => {
     const fetchPlaylistData = async () => {
       const promises = arrayEncodeID.map((item) =>
-        axios.get(`${import.meta.env.VITE_SERVER}/playlist/${item}`)
+        axios.get(`/playlist/${item}`)
       );
       try {
         const responses = await Promise.all(promises);
@@ -90,10 +99,43 @@ function App() {
 
     fetchPlaylistData();
   }, [arrayEncodeID]);
+  //end call api
+
+  //load music
+  function loadMusic(song: Song) {
+    if (song) {
+      if (progress.current) {
+        progress.current.style.width = `0%`;
+      }
+
+      if (
+        title.current &&
+        artist.current &&
+        image.current &&
+        background.current &&
+        durationEl.current
+      ) {
+        title.current.textContent =
+          song.displayName.length > 30
+            ? `${song.displayName.substring(0, 30)}....`
+            : song.displayName;
+        artist.current.textContent =
+          song.artist.length > 35
+            ? `${song.artist.substring(0, 35)}....`
+            : song.artist;
+        image.current.src = song.cover;
+        background.current.src = song.cover;
+        durationEl.current.textContent = convertMinutesToTime(song.duration);
+      }
+    }
+  }
+  //end load
 
   useEffect(() => {
-    updateProgressBar();
-  }, [time]);
+    if (sourceMusic) {
+      music.src = sourceMusic;
+    }
+  }, [sourceMusic]);
 
   useEffect(() => {
     if (!isPlaying) {
@@ -117,51 +159,36 @@ function App() {
       playBtn.current.setAttribute("title", "Pause");
       music.play().catch(() => {
         setIsPlaying(false);
-        pauseMusic();
       });
-    }
-  }
-
-  function loadMusic(song: Song) {
-    if (song) {
-      music.src = sourceMusic;
-      if (progress.current) {
-        progress.current.style.width = `0%`;
-      }
-      music.load();
-
-      if (
-        title.current &&
-        artist.current &&
-        image.current &&
-        background.current
-      ) {
-        title.current.textContent =
-          song.displayName.length > 30
-            ? `${song.displayName.substring(0, 30)}....`
-            : song.displayName;
-        artist.current.textContent =
-          song.artist.length > 35
-            ? `${song.artist.substring(0, 35)}....`
-            : song.artist;
-        image.current.src = song.cover;
-        background.current.src = song.cover;
-      }
     }
   }
 
   function changeMusic(direction: number) {
     setMusicIndex((musicIndex + direction + songs.length) % songs.length);
     loadMusic(songs[musicIndex]);
-    playMusic();
+    if (progress.current) {
+      progress.current.style.width = "0%";
+    }
   }
 
+  //Start update pregressbar
+  useEffect(() => {
+    updateProgressBar();
+  }, [time]);
+
   function updateProgressBar() {
-    const { currentTime, duration } = music;
+    const { currentTime } = music;
+
+    const duration = songs[musicIndex]?.duration;
+
+    if (Math.ceil(currentTime) === duration) {
+      setMusicIndex((prev) => ++prev);
+    }
     const progressPercent = (currentTime / duration) * 100;
     if (progress.current) {
       progress.current.style.width = `${progressPercent}%`;
     }
+
     const formatTime = (time: number) =>
       String(Math.floor(time)).padStart(2, "0");
 
@@ -188,11 +215,11 @@ function App() {
       const clickX = e.nativeEvent.offsetX;
       const currentTime = (clickX / width) * music.duration;
       music.currentTime = currentTime;
-      setMusic(music);
+      setTime(currentTime);
     }
   }
 
-  music.addEventListener("timeupdate", (e) => setTime(e.timeStamp));
+  //End update progressbar
 
   return (
     <>
