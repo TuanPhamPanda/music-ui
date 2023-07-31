@@ -10,7 +10,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [musicIndex, setMusicIndex] = useState(0);
   const [sourceMusic, setSourceMusic] = useState();
-  const music = new Audio(sourceMusic);
+  const [music] = useState(new Audio(sourceMusic));
   const image = useRef<HTMLImageElement>(null);
   const title = useRef<HTMLDivElement>(null);
   const artist = useRef<HTMLDivElement>(null);
@@ -23,6 +23,7 @@ function App() {
   const [arrayEncodeID, setArrayEncodeID] = useState<Array<string>>([]);
   const [time, setTime] = useState(0);
 
+  //start call api
   useEffect(() => {
     if (songs.length > 0) {
       axios
@@ -52,7 +53,10 @@ function App() {
   useEffect(() => {
     axios.get(`/`).then((value) => {
       const arrayTemp = value.data.items
-        .filter((item: { sectionType: string; items: unknown }) => item.sectionType === "playlist" && item.items)
+        .filter(
+          (item: { sectionType: string; items: [] }) =>
+            item.sectionType === "playlist" && item.items
+        )
         .map((item) => {
           const arrayStringTemp = item.items.map((item) => item.encodeId);
           return arrayStringTemp;
@@ -60,6 +64,7 @@ function App() {
       setArrayEncodeID([...new Set([].concat(...arrayTemp))]);
     });
   }, []);
+
   useEffect(() => {
     const fetchPlaylistData = async () => {
       const promises = arrayEncodeID.map((item) =>
