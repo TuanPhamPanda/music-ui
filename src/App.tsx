@@ -10,7 +10,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [musicIndex, setMusicIndex] = useState(0);
   const [sourceMusic, setSourceMusic] = useState();
-  const [music, setMusic] = useState(new Audio(sourceMusic));
+  const music = new Audio(sourceMusic);
   const image = useRef<HTMLImageElement>(null);
   const title = useRef<HTMLDivElement>(null);
   const artist = useRef<HTMLDivElement>(null);
@@ -23,7 +23,6 @@ function App() {
   const [arrayEncodeID, setArrayEncodeID] = useState<Array<string>>([]);
   const [time, setTime] = useState(0);
 
-  //start call api
   useEffect(() => {
     if (songs.length > 0) {
       axios
@@ -53,7 +52,7 @@ function App() {
   useEffect(() => {
     axios.get(`/`).then((value) => {
       const arrayTemp = value.data.items
-        .filter((item) => item.sectionType === "playlist" && item.items)
+        .filter((item: { sectionType: string; items: unknown }) => item.sectionType === "playlist" && item.items)
         .map((item) => {
           const arrayStringTemp = item.items.map((item) => item.encodeId);
           return arrayStringTemp;
@@ -99,9 +98,7 @@ function App() {
 
     fetchPlaylistData();
   }, [arrayEncodeID]);
-  //end call api
 
-  //load music
   function loadMusic(song: Song) {
     if (song) {
       if (progress.current) {
@@ -129,7 +126,6 @@ function App() {
       }
     }
   }
-  //end load
 
   useEffect(() => {
     if (sourceMusic) {
@@ -171,7 +167,6 @@ function App() {
     }
   }
 
-  //Start update pregressbar
   useEffect(() => {
     updateProgressBar();
   }, [time]);
@@ -218,8 +213,6 @@ function App() {
       setTime(currentTime);
     }
   }
-
-  //End update progressbar
 
   return (
     <>
