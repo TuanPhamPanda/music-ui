@@ -57,8 +57,10 @@ function App() {
           (item: { sectionType: string; items: [] }) =>
             item.sectionType === "playlist" && item.items
         )
-        .map((item) => {
-          const arrayStringTemp = item.items.map((item) => item.encodeId);
+        .map((item: { items: [] }) => {
+          const arrayStringTemp = item.items.map(
+            (item: { encodeId: string }) => item.encodeId
+          );
           return arrayStringTemp;
         });
       setArrayEncodeID([...new Set([].concat(...arrayTemp))]);
