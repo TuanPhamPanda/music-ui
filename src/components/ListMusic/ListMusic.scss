@@ -20,15 +20,15 @@
     background: #888;
   }
 
+  & > :last-child{
+    margin-bottom: 12px;
+  }
+
   .music-item {
     display: flex;
     gap: 8px;
     margin-left: 10px;
     margin-top: 12px;
-
-    & > :last-child{
-      margin-bottom: 12px;
-    }
 
     img {
       height: 40px;
