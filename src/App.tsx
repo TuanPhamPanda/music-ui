@@ -228,10 +228,14 @@ function App() {
       </div>
       <div className="container">
         <div className="player-img">
-          <img ref={image} className="active" id="cover" />
+          <img
+            ref={image}
+            className={`active ${songs.length === 0 ? "skeleton" : ""}`}
+            id="cover"
+          />
         </div>
-        <h2 ref={title}></h2>
-        <h3 ref={artist}></h3>
+        <h2 className="text-capitalize" ref={title}></h2>
+        <h3 className="text-capitalize" ref={artist}></h3>
         <div
           className="player-progress"
           ref={playerProgress}

@@ -5,16 +5,17 @@
   top: 48px;
   bottom: 95px;
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--background-container);
   margin-left: 8px;
   overflow-y: scroll;
   scrollbar-width: thin;
+  box-shadow: 8px 8px 8px 5px rgba(0, 0, 0, 0.3);
 
   &::-webkit-scrollbar {
     width: 4px;
   }
   &::-webkit-scrollbar-track {
-    background: #9be6f9;
+    background: var(--blue-border);
   }
   &::-webkit-scrollbar-thumb {
     background: #888;

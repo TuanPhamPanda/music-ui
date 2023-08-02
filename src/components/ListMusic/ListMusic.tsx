@@ -21,16 +21,16 @@ const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex }) => {
     <div
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
-      className={`list-music ${isMouseOver ? "hide-scrollbar" : ""}`}
+      className={`list-music ${isMouseOver ? "hide-scrollbar" : ""} ${songs.length === 0 ?'skeleton': ''}`}
     >
       {songs.map((song: Song, index: number) => {
         return (
           <div key={index} className="music-item">
             <img onClick={() => {onMusicIndex(index)}} src={song.cover} alt="img" />
             <div className="music-description">
-              <span onClick={()=>{onMusicIndex(index)}} style={{ cursor: "pointer" }}>{song.displayName}</span>
+              <span className="text-capitalize" onClick={()=>{onMusicIndex(index)}} style={{ cursor: "pointer" }}>{song.displayName}</span>
               <div>
-                <span>{song.artist}</span>
+                <span className="text-capitalize">{song.artist}</span>
                 <span>{convertMinutesToTime(song.duration)}</span>
               </div>
             </div>
