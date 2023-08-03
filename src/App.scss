@@ -1,0 +1,29 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0 auto;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scrollbar-width: thin;
+  flex-direction: column;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--primary-color);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+  & > :last-child {
+    margin-bottom: 12px;
+  }
+}

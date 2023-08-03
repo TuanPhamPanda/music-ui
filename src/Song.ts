@@ -1,3 +1,5 @@
+import { removeVietnameseDiacritics } from "./utils/fn";
+
 export class Song {
   path: string;
   displayName: string;
@@ -17,5 +19,9 @@ export class Song {
     this.cover = cover;
     this.artist = artist;
     this.duration = duration;
+  }
+
+  convertVietnameseToEnglish() {
+    return removeVietnameseDiacritics(this.displayName);
   }
 }

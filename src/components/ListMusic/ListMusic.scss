@@ -1,27 +1,33 @@
-.list-music {
-  position: absolute;
-  width: 400px;
-  right: 20px;
-  top: 48px;
-  bottom: 95px;
+.wrapper {
+  position: fixed;
+  width: var(--width-global);
+  max-width: 100%;
+  left: 68%;
+  top: 70px;
+  bottom: 70px;
   border-radius: 10px;
   background-color: var(--background-container);
-  margin-left: 8px;
-  overflow-y: scroll;
-  scrollbar-width: thin;
   box-shadow: 8px 8px 8px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.list-music {
+  overflow-y: scroll;
+  height: 100%;
+  scrollbar-width: thin;
 
   &::-webkit-scrollbar {
     width: 4px;
   }
   &::-webkit-scrollbar-track {
-    background: var(--blue-border);
+    background: var(--primary-color);
   }
   &::-webkit-scrollbar-thumb {
     background: #888;
   }
 
-  & > :last-child{
+  & > :last-child {
     margin-bottom: 12px;
   }
 
@@ -36,7 +42,7 @@
       width: 40px;
       object-fit: cover;
       cursor: pointer;
-      &:hover{
+      &:hover {
         transform: scale(1.2);
       }
     }
@@ -54,14 +60,35 @@
   }
 }
 
-/* Đổi màu sắc thanh cuộn */
 .hide-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
-/* Màu cho cần cuộn */
 .hide-scrollbar::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: top-left-radius top-right-radius bottom-right-radius
     bottom-left-radius;
+}
+
+
+@media only screen and (max-width: 1320px) {
+  .wrapper {
+    position: unset !important;
+    margin-top: 16px;
+    height: 400px;
+    width: var(--width-global);
+    transform: translateY(40%);
+    margin-bottom: 60%;
+  }
+}
+
+@media only screen and (min-width: 2200px) {
+  .wrapper {
+    right: 20%;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .wrapper {
+    width: var(--max-width-540);
+  }
 }
