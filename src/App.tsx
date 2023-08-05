@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import "./App.scss";
 import { Song } from "./Song";
 import axios from "./apis/axios";
+import ListMusicLoading from "./components/ListMusicLoading/ListMusicLoading";
 import ListMusic from "./components/ListMusic/ListMusic";
+import MusicLoading from "./components/MusicLoading/MusicLoading";
 import Music from "./components/Music/Music";
 
 function App() {
@@ -56,9 +58,8 @@ function App() {
             );
           }
         });
-
+        
         setSongs(
-          //filter with path in class Song
           arrayTemp.filter((song, index, self) => {
             const isUnique = !self
               .slice(0, index)
@@ -66,7 +67,7 @@ function App() {
             return isUnique;
           })
         );
-        
+   
       } catch (error) {
         console.log(error);
       }
@@ -74,15 +75,23 @@ function App() {
 
     fetchPlaylistData();
   }, [arrayEncodeID]);
-
+  
   return (
     <>
-      <Music
-        onMusicIndex={setMusicIndex}
-        song={songs[musicIndex]}
-        songsLength={songs.length}
-      />
-      <ListMusic onMusicIndex={setMusicIndex} songs={songs} />
+      {songs.length > 0 ? (
+        <Music
+          onMusicIndex={setMusicIndex}
+          song={songs[musicIndex]}
+          songsLength={songs.length}
+        />
+      ) : (
+        <MusicLoading />
+      )}
+      {songs.length === 0 ? (
+        <ListMusicLoading />
+      ) : (
+        <ListMusic onMusicIndex={setMusicIndex} songs={songs} />
+      )}
     </>
   );
 }
