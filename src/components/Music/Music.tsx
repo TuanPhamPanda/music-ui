@@ -1,8 +1,10 @@
+import { toast } from "react-toastify";
 import axios from "../../apis/axios";
 import { Song } from "../../Song";
 import { convertMinutesToTime } from "../../utils/fn";
 import "./Music.scss";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { MusicContext } from "../../context/MusicProvider";
 
 // props: setIndex, song, songsLength
 interface MusicProps {
@@ -12,9 +14,9 @@ interface MusicProps {
 }
 
 const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [sourceMusic, setSourceMusic] = useState();
-  const [music] = useState(new Audio(sourceMusic));
+  const context = useContext(MusicContext);
+  const { isPlaying, setIsPlaying } = context;
+  const [music, setMusic] = useState(new Audio(context?.sourceMusic));
   const background = useRef<HTMLImageElement>(null);
   const image = useRef<HTMLImageElement>(null);
   const progress = useRef<HTMLDivElement>(null);
@@ -40,7 +42,10 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
         const musicSource = await axios.get(
           `${import.meta.env.VITE_SERVER}/${song.path}`
         );
-        await setSourceMusic(musicSource.data.data["128"]);
+        if (musicSource.data.data) {
+          await setSourceMusic(musicSource.data.data["128"]);
+        }
+
         await setIsPlaying(true);
       }
     };
@@ -165,16 +170,13 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
             <h3 className="text-capitalize" ref={artist}></h3>
 
             <div className="player-progress">
-              <div
-                ref={playerProgress}
-                onClick={(e) => setProgressBar(e)}
-              >
+              <div ref={playerProgress} onClick={(e) => setProgressBar(e)}>
                 <div className="progress" ref={progress}></div>
               </div>
               <div className="music-duration">
-                  <span ref={currentTimeEl}>00:00</span>
-                  <span ref={durationEl}></span>
-                </div>
+                <span ref={currentTimeEl}>00:00</span>
+                <span ref={durationEl}></span>
+              </div>
             </div>
 
             <div className="player-controls">

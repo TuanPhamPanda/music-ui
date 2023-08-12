@@ -46,23 +46,29 @@ const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex }) => {
           songs.length === 0 ? "skeleton" : ""
         }`}
       >
-        {search === ""
-          ? songs.map((song: Song, index: number) => (
-              <MusicItem
-                key={index}
-                index={index}
-                onMusicIndex={onMusicIndex}
-                song={song}
-              />
-            ))
-          : currentSongs.map((song: Song, index: number) => (
-              <MusicItem
-                key={index}
-                index={index}
-                onMusicIndex={onMusicIndex}
-                song={song}
-              />
-            ))}
+        {search === "" ? (
+          songs.map((song: Song, index: number) => (
+            <MusicItem
+              key={index}
+              index={index}
+              onMusicIndex={onMusicIndex}
+              song={song}
+            />
+          ))
+        ) : currentSongs.length === 0 ? (
+          <div className="not-found">
+            <span>Không tìm thấy kết quả</span>
+          </div>
+        ) : (
+          currentSongs.map((song: Song) => (
+            <MusicItem
+              key={song.path}
+              index={songs.findIndex((s: Song) => s.path === song.path)}
+              onMusicIndex={onMusicIndex}
+              song={song}
+            />
+          ))
+        )}
       </div>
     </div>
   );
