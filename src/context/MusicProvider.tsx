@@ -1,29 +1,48 @@
 import {
+  Dispatch,
+  SetStateAction,
   createContext,
   useState,
-  useEffect,
+  useContext,
 } from "react";
 
-export const MusicContext = createContext<{
-    sourceMusic: string | undefined;
-    setSourceMusic: React.Dispatch<React.SetStateAction<string | undefined>>;
-    isPlaying: boolean;
-    setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>
-  } | undefined>(undefined);
+type MusicContextType = {
+  sourceMusic: string | undefined;
+  setSourceMusic: Dispatch<SetStateAction<string | undefined>>;
+  isPlaying: boolean;
+  setIsPlaying: Dispatch<SetStateAction<boolean>>;
+};
 
+const MusicContext = createContext<MusicContextType | undefined>(undefined);
+
+export const useMusicContext = () => {
+  const context = useContext(MusicContext);
+
+  if (!context) {
+    throw new Error("useMusicContext must be used within a MusicProvider");
+  }
+
+  return context;
+};
 interface MusicProviderProps {
   children: React.ReactNode;
 }
 
-const MusicProvider:React.FC<MusicProviderProps> = ({ children }) => {
+const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
+  const [sourceMusic, setSourceMusic] = useState<string | undefined>();
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-    const [sourceMusic, setSourceMusic] = useState<string|undefined>();
-    const [isPlaying, setIsPlaying] = useState(false);
+  const contextValue: MusicContextType = {
+    sourceMusic,
+    setSourceMusic,
+    isPlaying,
+    setIsPlaying,
+  };
 
   return (
-    <MusicContext.Provider value={{ sourceMusic, setSourceMusic, isPlaying, setIsPlaying }}>
-    {children}
-  </MusicContext.Provider>
+    <MusicContext.Provider value={contextValue}>
+      {children}
+    </MusicContext.Provider>
   );
 };
 

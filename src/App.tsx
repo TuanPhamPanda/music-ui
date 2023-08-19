@@ -6,6 +6,9 @@ import ListMusicLoading from "./components/ListMusicLoading/ListMusicLoading";
 import ListMusic from "./components/ListMusic/ListMusic";
 import MusicLoading from "./components/MusicLoading/MusicLoading";
 import Music from "./components/Music/Music";
+import { MusicProvider } from "./context";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [songs, setSongs] = useState<Array<Song>>([]);
@@ -58,7 +61,7 @@ function App() {
             );
           }
         });
-        
+
         setSongs(
           arrayTemp.filter((song, index, self) => {
             const isUnique = !self
@@ -67,7 +70,6 @@ function App() {
             return isUnique;
           })
         );
-   
       } catch (error) {
         console.log(error);
       }
@@ -75,9 +77,9 @@ function App() {
 
     fetchPlaylistData();
   }, [arrayEncodeID]);
-  
+
   return (
-    <>
+    <MusicProvider>
       {songs.length > 0 ? (
         <Music
           onMusicIndex={setMusicIndex}
@@ -92,7 +94,20 @@ function App() {
       ) : (
         <ListMusic onMusicIndex={setMusicIndex} songs={songs} />
       )}
-    </>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </MusicProvider>
   );
 }
 

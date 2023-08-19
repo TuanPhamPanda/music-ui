@@ -1,10 +1,10 @@
-import { toast } from "react-toastify";
 import axios from "../../apis/axios";
 import { Song } from "../../Song";
 import { convertMinutesToTime } from "../../utils/fn";
 import "./Music.scss";
-import { useContext, useEffect, useRef, useState } from "react";
-import { MusicContext } from "../../context/MusicProvider";
+import { useEffect, useRef, useState } from "react";
+import { useMusicContext } from "../../context/MusicProvider";
+import { toast } from "react-toastify";
 
 // props: setIndex, song, songsLength
 interface MusicProps {
@@ -14,9 +14,10 @@ interface MusicProps {
 }
 
 const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
-  const context = useContext(MusicContext);
-  const { isPlaying, setIsPlaying } = context;
-  const [music, setMusic] = useState(new Audio(context?.sourceMusic));
+  const { isPlaying, setIsPlaying, sourceMusic, setSourceMusic } =
+    useMusicContext();
+
+  const [music] = useState(() => new Audio(sourceMusic));
   const background = useRef<HTMLImageElement>(null);
   const image = useRef<HTMLImageElement>(null);
   const progress = useRef<HTMLDivElement>(null);
@@ -42,20 +43,27 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
         const musicSource = await axios.get(
           `${import.meta.env.VITE_SERVER}/${song.path}`
         );
+        
         if (musicSource.data.data) {
+          
           await setSourceMusic(musicSource.data.data["128"]);
+          await setIsPlaying(true);
+        } else {
+          await setSourceMusic("Not found");
         }
-
-        await setIsPlaying(true);
       }
     };
     fetchSourceMusic();
   }, [song]);
 
   useEffect(() => {
-    if (sourceMusic) {
+    if (sourceMusic === "Not found") {
+      setIsPlaying(false);
+      toast.error("Không thể phát bài này.");
+    } else if (sourceMusic?.startsWith("https://")) {
       music.src = sourceMusic;
     }
+    
   }, [sourceMusic]);
 
   function playMusic() {
@@ -188,7 +196,15 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
               <i
                 ref={playBtn}
                 className="fa-solid fa-play play-button"
-                onClick={() => setIsPlaying((prev) => !prev)}
+                onClick={() => {
+                  if (sourceMusic === "Not found") {
+                    toast.error("Không thể phát bài này.");
+                  } else if (sourceMusic?.startsWith("https://")) {
+                    setIsPlaying((prev: boolean) => !prev);
+                  } else {
+                    return;
+                  }
+                }}
                 title="Play"
               ></i>
               <i
