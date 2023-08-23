@@ -94,14 +94,13 @@
       & > i {
         padding: 24px;
         font-size: 32px;
+        max-width: 68px;
         color: rgb(138, 218, 252);
-        &::before {
-          margin-left: 4px;
-        }
       }
     }
 
     .player-img div.active {
+      border-radius: 50%;
       width: 100%;
       height: 100%;
       transition: all 0.5s linear;
