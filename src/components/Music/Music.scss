@@ -5,6 +5,7 @@
   top: -50%;
   left: -50%;
   z-index: -1;
+
   img {
     position: absolute;
     margin: auto;
@@ -22,7 +23,7 @@
 
 .container {
   background-color: var(--background-container);
-  height: 500px;
+  height: 550px;
   width: var(--width-global);
   border-radius: 20px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
@@ -73,23 +74,23 @@
   }
 
   .player-progress {
-    & > :first-child {
-      border-radius: 5px;
-      height: 6px;
-      width: 100%;
-      cursor: pointer;
-    }
     position: relative;
     margin: 40px 20px 35px;
     background-color: #fff;
-  }
-
-  .progress {
-    background-color: var(--primary-color);
-    border-radius: 5px;
-    height: 100%;
-    width: 0%;
-    transition: width 0.1 linear;
+    & > :first-child {
+      border-radius: 5px;
+      height: 6px;
+      width: calc(100% + 3px);
+      cursor: pointer;
+      display: flex;
+      .progress {
+        background-color: var(--primary-color);
+        border-radius: 5px;
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s linear;
+      }
+    }
   }
 
   .music-duration {
@@ -120,8 +121,33 @@
     filter: brightness(40%);
   }
 
-  .play-button {
-    font-size: 42px;
+  .play-pause {
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(
+        270deg,
+        rgb(138, 218, 252) 0%,
+        rgb(214, 247, 246) 20%,
+        rgb(245, 137, 252) 94%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: -1;
+      padding: 12px;
+    }
+
+    & > i {
+      padding: 24px;
+      font-size: 32px;
+      max-width: 68px;
+      color: rgb(138, 218, 252);
+    }
   }
 
   .player-img img.active {

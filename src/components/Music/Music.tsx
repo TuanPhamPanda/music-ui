@@ -43,9 +43,8 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
         const musicSource = await axios.get(
           `${import.meta.env.VITE_SERVER}/${song.path}`
         );
-        
+
         if (musicSource.data.data) {
-          
           await setSourceMusic(musicSource.data.data["128"]);
           await setIsPlaying(true);
         } else {
@@ -63,7 +62,6 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
     } else if (sourceMusic?.startsWith("https://")) {
       music.src = sourceMusic;
     }
-    
   }, [sourceMusic]);
 
   function playMusic() {
@@ -180,6 +178,7 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
             <div className="player-progress">
               <div ref={playerProgress} onClick={(e) => setProgressBar(e)}>
                 <div className="progress" ref={progress}></div>
+                <div style={{backgroundColor: "black",width: "3px", height:"100%"}}></div>
               </div>
               <div className="music-duration">
                 <span ref={currentTimeEl}>00:00</span>
@@ -193,20 +192,22 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
                 onClick={() => changeMusic(-1)}
                 title="Previous"
               ></i>
-              <i
-                ref={playBtn}
-                className="fa-solid fa-play play-button"
-                onClick={() => {
-                  if (sourceMusic === "Not found") {
-                    toast.error("Không thể phát bài này.");
-                  } else if (sourceMusic?.startsWith("https://")) {
-                    setIsPlaying((prev: boolean) => !prev);
-                  } else {
-                    return;
-                  }
-                }}
-                title="Play"
-              ></i>
+              <div className="play-pause">
+                <i
+                  ref={playBtn}
+                  className="fa-solid fa-pause"
+                  onClick={() => {
+                    if (sourceMusic === "Not found") {
+                      toast.error("Không thể phát bài này.");
+                    } else if (sourceMusic?.startsWith("https://")) {
+                      setIsPlaying((prev: boolean) => !prev);
+                    } else {
+                      return;
+                    }
+                  }}
+                  title="Play"
+                ></i>
+              </div>
               <i
                 className="fa-solid fa-forward"
                 onClick={() => changeMusic(1)}

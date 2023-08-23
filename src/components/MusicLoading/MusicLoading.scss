@@ -70,8 +70,35 @@
       transition: all 0.3 ease;
     }
 
-    .play-button {
-      font-size: 42px;
+    .play-pause {
+      position: relative;
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: linear-gradient(
+          270deg,
+          rgb(138, 218, 252) 0%,
+          rgb(214, 247, 246) 20%,
+          rgb(245, 137, 252) 94%
+        );
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        z-index: -1;
+        padding: 12px;
+      }
+
+      & > i {
+        padding: 24px;
+        font-size: 32px;
+        color: rgb(138, 218, 252);
+        &::before {
+          margin-left: 4px;
+        }
+      }
     }
 
     .player-img div.active {

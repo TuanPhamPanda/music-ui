@@ -14,7 +14,9 @@ const MusicLoading = () => {
 
         <div className="player-controls">
           <i className="fa-solid fa-backward" title="Previous"></i>
-          <i className="fa-solid fa-play play-button" title="Play"></i>
+          <div className="play-pause">
+            <i className="fa-solid fa-play" title="Play"></i>
+          </div>
           <i className="fa-solid fa-forward" title="Next"></i>
         </div>
       </div>
