@@ -24,38 +24,38 @@ svg:hover {
   }
 }
 
-
 svg:nth-child(3):not(:hover) {
-    & > :first-child {
-      transition: all 2s linear;
-      color: initial !important;
-    }
-    &>:last-child{
-      color: black;
-    }
+  & > :first-child {
+    transition: all 2s linear;
+    color: initial !important;
   }
-  
-  svg:nth-child(3):hover {
-    filter: none;
-    transition: all .7s ease-out;
-    & > :first-child {
-      transition: all 1s linear;
-      color: var(--primary-color) !important;
-    }
+  & > :last-child {
+    color: black;
   }
-  
-  svg:nth-child(3){
-    & > :first-child{
-      color: gray !important;
-    }
+}
+
+svg:nth-child(3):hover {
+  filter: none;
+  transition: all 0.7s ease-out;
+  & > :first-child {
+    transition: all 1s linear;
+    color: var(--primary-color) !important;
   }
-  
-  
-  svg.random, svg.show-hide-list {
-    color: pink;
+}
+
+svg:nth-child(3) {
+  & > :first-child {
+    color: gray !important;
   }
-  
-  svg.random, svg.show-hide-list:hover {
-    color: rgb(138, 218, 252);
-    filter: brightness(100%);
-  }  
+}
+
+svg.random,
+svg.show-hide-list{
+  color: pink !important;
+}
+
+svg.random:hover,
+svg.show-hide-list:hover {
+  color: rgb(138, 218, 252) !important;
+  filter: brightness(100%);
+}
