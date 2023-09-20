@@ -14,7 +14,7 @@ function App() {
   const [songs, setSongs] = useState<Array<Song>>([]);
   const [musicIndex, setMusicIndex] = useState(0);
   const [arrayEncodeID, setArrayEncodeID] = useState<Array<string>>([]);
-  const [isShowList, setIsShowList] = useState<boolean>(false);
+  const [isShowList, setIsShowList] = useState<boolean>(true);
 
   useEffect(() => {
     axios.get(`/`).then((value) => {
@@ -76,7 +76,9 @@ function App() {
       }
     };
 
-    fetchPlaylistData();
+    fetchPlaylistData().then(() => {
+      setIsShowList(true);
+    });
   }, [arrayEncodeID]);
 
   return (

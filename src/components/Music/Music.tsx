@@ -5,8 +5,7 @@ import "./Music.scss";
 import React, { useEffect, useRef, useState } from "react";
 import { useMusicContext } from "../../context/MusicProvider";
 import { toast } from "react-toastify";
-import { icons } from "../../utils/icons";
-import { pausePlay, sizeIcon } from "../../utils/constant";
+import ListButton from "../ListButton/ListButton";
 
 interface MusicProps {
   isShowList: boolean;
@@ -31,15 +30,6 @@ const Music: React.FC<MusicProps> = ({
     isRandom,
     setIsRandom,
   } = useMusicContext();
-
-  const {
-    BiSkipNext,
-    IoPauseCircleOutline,
-    IoPlayCircleOutline,
-    BiSolidPlaylist,
-    BiSkipPrevious,
-    LiaRandomSolid,
-  } = icons;
 
   const [music] = useState(() => new Audio(sourceMusic));
   const background = useRef<HTMLImageElement>(null);
@@ -70,7 +60,7 @@ const Music: React.FC<MusicProps> = ({
         if (musicSource.data.data) {
           await setSourceMusic(musicSource.data.data["128"]);
 
-          //await setIsPlaying(true);
+          await setIsPlaying(true);
         } else {
           await setSourceMusic("Not found");
         }
@@ -212,43 +202,17 @@ const Music: React.FC<MusicProps> = ({
               </div>
             </div>
 
-            <div className="player-controls">
-              <LiaRandomSolid
-                className={`${isRandom ? "random" : ""}`}
-                onClick={() => {
-                  isRandom ? setIsRandom(false) : setIsRandom(true);
-                }}
-                size={sizeIcon}
-              />
-
-              <BiSkipPrevious onClick={() => changeMusic(-1)} size={sizeIcon} />
-
-              {isPlaying ? (
-                <IoPauseCircleOutline
-                  onClick={() => {
-                    setIsPlaying(false);
-                    pauseMusic();
-                  }}
-                  size={pausePlay}
-                />
-              ) : (
-                <IoPlayCircleOutline
-                  onClick={() => {
-                    setIsPlaying(true);
-                    playMusic();
-                  }}
-                  size={pausePlay}
-                />
-              )}
-
-              <BiSkipNext onClick={() => changeMusic(1)} size={sizeIcon} />
-
-              <BiSolidPlaylist
-                className={`${isShowList || 'show-hide-list'}`}
-                onClick={() => onShowList((prev) => !prev)}
-                size={sizeIcon}
-              />
-            </div>
+            <ListButton
+              setIsShowList={onShowList}
+              changeMusic={changeMusic}
+              isPlaying={isPlaying}
+              isRandom={isRandom}
+              isShowList={isShowList}
+              pauseMusic={pauseMusic}
+              setIsPlaying={setIsPlaying}
+              playMusic={playMusic}
+              setIsRandom={setIsRandom}
+            />
           </>
         )}
       </div>

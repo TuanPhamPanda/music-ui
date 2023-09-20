@@ -38,7 +38,7 @@ const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex, isShowHidLis
   };
 
   return (
-    <div className={`wrapper ${isShowHidList && 'show-hide'}`}>
+    <div className={`wrapper ${isShowHidList || 'show-hide'}`}>
       <Search searchInput={search} onChangeInput={handleChangeInput} />
       <div
         onMouseLeave={handleMouseLeave}

@@ -40,8 +40,8 @@ const MusicLoading: React.FC<MusicLoadingProps> = ({
           <BiSkipNext size={sizeIcon} />
 
           <BiSolidPlaylist
-            className={`${isShowList || "show-hide-list"}`}
-            onClick={() => onShowList((prev) => !prev)}
+        className={`${isShowList && "show-hide-list"}`}
+        onClick={() => onShowList((prev) => !prev)}
             size={sizeIcon}
           />
         </div>

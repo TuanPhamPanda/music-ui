@@ -1,0 +1,61 @@
+.player-controls {
+  margin: 20px auto 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 16px;
+}
+
+svg {
+  cursor: pointer;
+  color: #6a6969;
+  user-select: none;
+  transition: all 0.5s ease;
+}
+
+svg:hover {
+  filter: brightness(40%);
+}
+
+@media only screen and (max-width: 540px) {
+  .player-controls {
+    gap: 20px;
+    margin: 0 auto;
+  }
+}
+
+
+svg:nth-child(3):not(:hover) {
+    & > :first-child {
+      transition: all 2s linear;
+      color: initial !important;
+    }
+    &>:last-child{
+      color: black;
+    }
+  }
+  
+  svg:nth-child(3):hover {
+    filter: none;
+    transition: all .7s ease-out;
+    & > :first-child {
+      transition: all 1s linear;
+      color: var(--primary-color) !important;
+    }
+  }
+  
+  svg:nth-child(3){
+    & > :first-child{
+      color: gray !important;
+    }
+  }
+  
+  
+  svg.random, svg.show-hide-list {
+    color: pink;
+  }
+  
+  svg.random, svg.show-hide-list:hover {
+    color: rgb(138, 218, 252);
+    filter: brightness(100%);
+  }  

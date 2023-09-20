@@ -7,7 +7,7 @@ interface ListMusicLoadingProps {
 const ListMusicLoading: React.FC<ListMusicLoadingProps> = ({ isShowList }) => {
   return (
     <div className="loading">
-      <div className={`wrapper ${isShowList || "show-hide"}`}>
+      <div className={`wrapper ${isShowList ||  'show-hide'}`}>
         <div className="list-music">
           {Array(8)
             .fill(0)
