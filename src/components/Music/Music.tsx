@@ -2,20 +2,44 @@ import axios from "../../apis/axios";
 import { Song } from "../../Song";
 import { convertMinutesToTime } from "../../utils/fn";
 import "./Music.scss";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMusicContext } from "../../context/MusicProvider";
 import { toast } from "react-toastify";
+import { icons } from "../../utils/icons";
+import { pausePlay, sizeIcon } from "../../utils/constant";
 
-// props: setIndex, song, songsLength
 interface MusicProps {
+  isShowList: boolean;
+  onShowList: React.Dispatch<React.SetStateAction<boolean>>;
   onMusicIndex: React.Dispatch<React.SetStateAction<number>>;
   song: Song;
   songsLength: number;
 }
 
-const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
-  const { isPlaying, setIsPlaying, sourceMusic, setSourceMusic } =
-    useMusicContext();
+const Music: React.FC<MusicProps> = ({
+  isShowList,
+  onShowList,
+  onMusicIndex,
+  song,
+  songsLength,
+}) => {
+  const {
+    isPlaying,
+    setIsPlaying,
+    sourceMusic,
+    setSourceMusic,
+    isRandom,
+    setIsRandom,
+  } = useMusicContext();
+
+  const {
+    BiSkipNext,
+    IoPauseCircleOutline,
+    IoPlayCircleOutline,
+    BiSolidPlaylist,
+    BiSkipPrevious,
+    LiaRandomSolid,
+  } = icons;
 
   const [music] = useState(() => new Audio(sourceMusic));
   const background = useRef<HTMLImageElement>(null);
@@ -26,7 +50,6 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
   const title = useRef<HTMLDivElement>(null);
   const [time, setTime] = useState(0);
   const currentTimeEl = useRef<HTMLDivElement>(null);
-  const playBtn = useRef<HTMLDivElement>(null);
   const artist = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,7 +69,8 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
 
         if (musicSource.data.data) {
           await setSourceMusic(musicSource.data.data["128"]);
-          await setIsPlaying(true);
+
+          //await setIsPlaying(true);
         } else {
           await setSourceMusic("Not found");
         }
@@ -58,28 +82,38 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
   useEffect(() => {
     if (sourceMusic === "Not found") {
       setIsPlaying(false);
-      toast.error("Không thể phát bài này.");
+      toast.error(`Không thể phát bài ${song.displayName}.`);
     } else if (sourceMusic?.startsWith("https://")) {
       music.src = sourceMusic;
     }
   }, [sourceMusic]);
 
-  function playMusic() {
-    if (playBtn.current) {
-      playBtn.current.classList.replace("fa-play", "fa-pause");
-      playBtn.current.setAttribute("title", "Pause");
-      music.play().catch(() => {
-        setIsPlaying(false);
-      });
+  useEffect(() => {
+    updateProgressBar();
+  }, [time]);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      pauseMusic();
+    } else {
+      playMusic();
     }
+  }, [isPlaying]);
+
+  function playMusic() {
+    music.play().catch(() => {
+      setIsPlaying(false);
+    });
   }
 
   function updateProgressBar() {
     const { currentTime } = music;
     const duration = song?.duration;
 
-    if (Math.ceil(currentTime) === duration) {
-      onMusicIndex((prev) => ++prev);
+    if (Math.floor(currentTime) === duration) {
+      onMusicIndex((prev) =>
+        isRandom ? Math.floor(Math.random() * songsLength) : ++prev
+      );
     }
 
     const progressPercent = (currentTime / duration) * 100;
@@ -100,14 +134,6 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
       durationEl.current.textContent = convertMinutesToTime(song.duration);
     }
   }
-
-  useEffect(() => {
-    if (!isPlaying) {
-      pauseMusic();
-    } else {
-      playMusic();
-    }
-  }, [isPlaying]);
 
   function setProgressBar(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (playerProgress.current) {
@@ -143,20 +169,14 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
     }
   }
 
-  useEffect(() => {
-    updateProgressBar();
-  }, [time]);
-
   function changeMusic(direction: number) {
-    onMusicIndex((prev) => (prev + direction + songsLength) % songsLength);
+    isRandom
+      ? onMusicIndex(Math.floor(Math.random() * songsLength))
+      : onMusicIndex((prev) => (prev + direction + songsLength) % songsLength);
   }
 
   function pauseMusic() {
     music.pause();
-    if (playBtn.current) {
-      playBtn.current.classList.replace("fa-pause", "fa-play");
-      playBtn.current.setAttribute("title", "Play");
-    }
   }
 
   music.addEventListener("timeupdate", (e: Event) => setTime(e.timeStamp));
@@ -178,7 +198,13 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
             <div className="player-progress">
               <div ref={playerProgress} onClick={(e) => setProgressBar(e)}>
                 <div className="progress" ref={progress}></div>
-                <div style={{backgroundColor: "black",width: "3px", height:"100%"}}></div>
+                <div
+                  style={{
+                    backgroundColor: "black",
+                    width: "3px",
+                    height: "100%",
+                  }}
+                ></div>
               </div>
               <div className="music-duration">
                 <span ref={currentTimeEl}>00:00</span>
@@ -187,32 +213,41 @@ const Music: React.FC<MusicProps> = ({ onMusicIndex, song, songsLength }) => {
             </div>
 
             <div className="player-controls">
-              <i
-                className="fa-solid fa-backward"
-                onClick={() => changeMusic(-1)}
-                title="Previous"
-              ></i>
-              <div className="play-pause">
-                <i
-                  ref={playBtn}
-                  className="fa-solid fa-pause"
+              <LiaRandomSolid
+                className={`${isRandom ? "random" : ""}`}
+                onClick={() => {
+                  isRandom ? setIsRandom(false) : setIsRandom(true);
+                }}
+                size={sizeIcon}
+              />
+
+              <BiSkipPrevious onClick={() => changeMusic(-1)} size={sizeIcon} />
+
+              {isPlaying ? (
+                <IoPauseCircleOutline
                   onClick={() => {
-                    if (sourceMusic === "Not found") {
-                      toast.error("Không thể phát bài này.");
-                    } else if (sourceMusic?.startsWith("https://")) {
-                      setIsPlaying((prev: boolean) => !prev);
-                    } else {
-                      return;
-                    }
+                    setIsPlaying(false);
+                    pauseMusic();
                   }}
-                  title="Play"
-                ></i>
-              </div>
-              <i
-                className="fa-solid fa-forward"
-                onClick={() => changeMusic(1)}
-                title="Next"
-              ></i>
+                  size={pausePlay}
+                />
+              ) : (
+                <IoPlayCircleOutline
+                  onClick={() => {
+                    setIsPlaying(true);
+                    playMusic();
+                  }}
+                  size={pausePlay}
+                />
+              )}
+
+              <BiSkipNext onClick={() => changeMusic(1)} size={sizeIcon} />
+
+              <BiSolidPlaylist
+                className={`${isShowList || 'show-hide-list'}`}
+                onClick={() => onShowList((prev) => !prev)}
+                size={sizeIcon}
+              />
             </div>
           </>
         )}

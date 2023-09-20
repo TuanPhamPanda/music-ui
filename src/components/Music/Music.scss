@@ -27,7 +27,7 @@
   width: var(--width-global);
   border-radius: 20px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-  transition: all 0.5 ease;
+  transition: all 0.5s ease;
   transform: translateY(30%);
 
   &:hover {
@@ -108,51 +108,21 @@
 
   .player-controls {
     margin: 20px auto 0;
-    max-width: 200px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    gap: 16px;
   }
 
-  .fa-solid {
-    font-size: 30px;
-    color: #666;
+  svg {
     cursor: pointer;
+    color: #6a6969;
     user-select: none;
-    transition: all 0.3 ease;
+    transition: all 0.5s ease;
   }
 
-  .fa-solid:hover {
+  svg:hover {
     filter: brightness(40%);
-  }
-
-  .play-pause {
-    position: relative;
-    &::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: linear-gradient(
-        270deg,
-        rgb(138, 218, 252) 0%,
-        rgb(214, 247, 246) 20%,
-        rgb(245, 137, 252) 94%
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: -1;
-      padding: 12px;
-    }
-
-    & > i {
-      padding: 24px;
-      font-size: 32px;
-      max-width: 68px;
-      color: rgb(138, 218, 252);
-    }
   }
 
   .player-img img.active {
@@ -172,7 +142,7 @@
       width: 200px;
       margin: 0 auto;
       left: 0;
-      img{
+      img {
         border-radius: 20px;
       }
     }
@@ -186,4 +156,40 @@
       margin: 32px 0;
     }
   }
+}
+
+
+svg:nth-child(3):not(:hover) {
+  & > :first-child {
+    transition: all 2s linear;
+    color: initial !important;
+  }
+  &>:last-child{
+    color: black;
+  }
+}
+
+svg:nth-child(3):hover {
+  filter: none;
+  transition: all .7s ease-out;
+  & > :first-child {
+    transition: all 1s linear;
+    color: var(--primary-color) !important;
+  }
+}
+
+svg:nth-child(3){
+  & > :first-child{
+    color: gray !important;
+  }
+}
+
+
+svg.random, svg.show-hide-list {
+  color: pink;
+}
+
+svg.random, svg.show-hide-list:hover {
+  color: rgb(138, 218, 252);
+  filter: brightness(100%);
 }

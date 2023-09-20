@@ -7,13 +7,14 @@ import ListMusic from "./components/ListMusic/ListMusic";
 import MusicLoading from "./components/MusicLoading/MusicLoading";
 import Music from "./components/Music/Music";
 import { MusicProvider } from "./context";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [songs, setSongs] = useState<Array<Song>>([]);
   const [musicIndex, setMusicIndex] = useState(0);
   const [arrayEncodeID, setArrayEncodeID] = useState<Array<string>>([]);
+  const [isShowList, setIsShowList] = useState<boolean>(false);
 
   useEffect(() => {
     axios.get(`/`).then((value) => {
@@ -82,17 +83,23 @@ function App() {
     <MusicProvider>
       {songs.length > 0 ? (
         <Music
+          isShowList={isShowList}
+          onShowList={setIsShowList}
           onMusicIndex={setMusicIndex}
           song={songs[musicIndex]}
           songsLength={songs.length}
         />
       ) : (
-        <MusicLoading />
+        <MusicLoading isShowList={isShowList} onShowList={setIsShowList} />
       )}
       {songs.length === 0 ? (
-        <ListMusicLoading />
+        <ListMusicLoading isShowList={isShowList} />
       ) : (
-        <ListMusic onMusicIndex={setMusicIndex} songs={songs} />
+        <ListMusic
+          onMusicIndex={setMusicIndex}
+          songs={songs}
+          isShowHidList={isShowList}
+        />
       )}
 
       <ToastContainer

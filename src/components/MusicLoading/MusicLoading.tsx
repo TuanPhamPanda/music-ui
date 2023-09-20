@@ -1,6 +1,24 @@
+import { pausePlay, sizeIcon } from "../../utils/constant";
+import { icons } from "../../utils/icons";
 import "./MusicLoading.scss";
 
-const MusicLoading = () => {
+interface MusicLoadingProps {
+  isShowList: boolean;
+  onShowList: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const MusicLoading: React.FC<MusicLoadingProps> = ({
+  isShowList,
+  onShowList,
+}) => {
+  const {
+    LiaRandomSolid,
+    BiSkipPrevious,
+    IoPlayCircleOutline,
+    BiSkipNext,
+    BiSolidPlaylist,
+  } = icons;
+
   return (
     <div className="music-loading">
       <div className="container">
@@ -13,11 +31,19 @@ const MusicLoading = () => {
         </div>
 
         <div className="player-controls">
-          <i className="fa-solid fa-backward" title="Previous"></i>
-          <div className="play-pause">
-            <i className="fa-solid fa-play" title="Play"></i>
-          </div>
-          <i className="fa-solid fa-forward" title="Next"></i>
+          <LiaRandomSolid size={sizeIcon} />
+
+          <BiSkipPrevious size={sizeIcon} />
+
+          <IoPlayCircleOutline size={pausePlay} />
+
+          <BiSkipNext size={sizeIcon} />
+
+          <BiSolidPlaylist
+            className={`${isShowList || "show-hide-list"}`}
+            onClick={() => onShowList((prev) => !prev)}
+            size={sizeIcon}
+          />
         </div>
       </div>
     </div>

@@ -8,9 +8,10 @@ import { removeVietnameseDiacritics } from "../../utils/fn";
 interface ListMusicProps {
   songs: Array<Song>;
   onMusicIndex: (index: number) => void;
+  isShowHidList: boolean;
 }
 
-const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex }) => {
+const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex, isShowHidList }) => {
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [search, setSearch] = useState("");
   const [currentSongs, setCurrentSongs] = useState<Array<Song>>([]);
@@ -37,7 +38,7 @@ const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex }) => {
   };
 
   return (
-    <div className="wrapper">
+    <div className={`wrapper ${isShowHidList && 'show-hide'}`}>
       <Search searchInput={search} onChangeInput={handleChangeInput} />
       <div
         onMouseLeave={handleMouseLeave}
