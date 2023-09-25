@@ -2,6 +2,8 @@ import React from "react";
 import "./ListButton.scss";
 import { icons } from "../../utils/icons";
 import { pausePlay, sizeIcon } from "../../utils/constant";
+import { useMusicContext } from "../../context/MusicProvider";
+import { toast } from "react-toastify";
 
 interface ListButtonProps {
   isRandom: boolean;
@@ -38,6 +40,8 @@ const ListButton: React.FC<ListButtonProps> = (props: ListButtonProps) => {
     BiSolidPlaylist,
   } = icons;
 
+  const { sourceMusic } = useMusicContext();
+
   return (
     <div className="player-controls">
       <LiaRandomSolid
@@ -61,6 +65,10 @@ const ListButton: React.FC<ListButtonProps> = (props: ListButtonProps) => {
       ) : (
         <IoPlayCircleOutline
           onClick={() => {
+            if(sourceMusic === 'Not found'){
+              toast.error('Không thể phát bài này!')
+              return;
+            }
             setIsPlaying(true);
             playMusic();
           }}

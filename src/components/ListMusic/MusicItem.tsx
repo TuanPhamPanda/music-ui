@@ -1,28 +1,38 @@
+import { memo } from "react";
 import { Song } from "../../Song";
+import { useMusicContext } from "../../context/MusicProvider";
 import { convertMinutesToTime } from "../../utils/fn";
 
 interface MusicItemProps {
   song: Song;
   onMusicIndex: (index: number) => void;
   index: number;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const MusicItem: React.FC<MusicItemProps> = ({ song, onMusicIndex, index }) => {
+const MusicItem: React.FC<MusicItemProps> = ({
+  song,
+  onMusicIndex,
+  index,
+  setSearch,
+}) => {
+  const { idSong } = useMusicContext();
+
+  const handleChooseMusic = () => {
+    onMusicIndex(index);
+
+    setTimeout(() => {
+      setSearch("");
+    }, 1000);
+  };
+
   return (
-    <div className="music-item">
-      <img
-        onClick={() => {
-          onMusicIndex(index);
-        }}
-        src={song.cover}
-        alt="img"
-      />
+    <div className={`music-item ${song.path === idSong ? "active" : ""}`}>
+      <img onClick={handleChooseMusic} src={song.cover} alt="img" />
       <div className="music-description">
         <span
           className="text-capitalize"
-          onClick={() => {
-            onMusicIndex(index);
-          }}
+          onClick={handleChooseMusic}
           style={{ cursor: "pointer" }}
         >
           {song.displayName}
@@ -36,4 +46,4 @@ const MusicItem: React.FC<MusicItemProps> = ({ song, onMusicIndex, index }) => {
   );
 };
 
-export default MusicItem;
+export default memo(MusicItem);

@@ -79,11 +79,13 @@
     gap: 8px;
     margin-left: 10px;
     margin-top: 12px;
+    padding: 2px 0;
 
     img {
       height: 40px;
       width: 40px;
       object-fit: cover;
+      border-radius: 8px;
       cursor: pointer;
       &:hover {
         transform: scale(1.2);
@@ -99,6 +101,16 @@
         display: flex;
         gap: 20px;
       }
+    }
+  }
+
+  .music-item.active{
+    border-radius: 8px;
+    padding: 8px 0;
+    background: linear-gradient(270deg, rgba(164,243,243,1) 17%, rgba(251,247,251,1) 48%, rgba(254,170,254,1) 83%);
+
+    span{
+      font-weight: bold;
     }
   }
 

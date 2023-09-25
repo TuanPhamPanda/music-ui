@@ -11,9 +11,10 @@ type MusicContextType = {
   setSourceMusic: Dispatch<SetStateAction<string | undefined>>;
   isPlaying: boolean;
   setIsPlaying: Dispatch<SetStateAction<boolean>>;
-  isRandom:boolean;
+  isRandom: boolean;
   setIsRandom: Dispatch<SetStateAction<boolean>>;
-  
+  idSong: string | undefined;
+  setIdSong: Dispatch<SetStateAction<string | undefined>>;
 };
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -35,14 +36,17 @@ const MusicProvider: React.FC<MusicProviderProps> = ({ children }) => {
   const [sourceMusic, setSourceMusic] = useState<string | undefined>();
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isRandom, setIsRandom] = useState<boolean>(false);
+  const [idSong, setIdSong] = useState<string | undefined>();
 
   const contextValue: MusicContextType = {
     sourceMusic,
     setSourceMusic,
     isPlaying,
     setIsPlaying,
-    isRandom, 
-    setIsRandom
+    isRandom,
+    setIsRandom,
+    idSong,
+    setIdSong,
   };
 
   return (

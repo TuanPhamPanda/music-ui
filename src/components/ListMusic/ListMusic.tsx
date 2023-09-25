@@ -1,6 +1,6 @@
 import { Song } from "../../Song";
 import "./ListMusic.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useState,memo } from "react";
 import Search from "../Search/Search";
 import MusicItem from "./MusicItem";
 import { removeVietnameseDiacritics } from "../../utils/fn";
@@ -54,6 +54,7 @@ const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex, isShowHidLis
               index={index}
               onMusicIndex={onMusicIndex}
               song={song}
+              setSearch={setSearch}
             />
           ))
         ) : currentSongs.length === 0 ? (
@@ -67,6 +68,7 @@ const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex, isShowHidLis
               index={songs.findIndex((s: Song) => s.path === song.path)}
               onMusicIndex={onMusicIndex}
               song={song}
+              setSearch={setSearch}
             />
           ))
         )}
@@ -75,4 +77,4 @@ const ListMusic: React.FC<ListMusicProps> = ({ songs, onMusicIndex, isShowHidLis
   );
 };
 
-export default ListMusic;
+export default memo(ListMusic);

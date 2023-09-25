@@ -29,6 +29,7 @@ const Music: React.FC<MusicProps> = ({
     setSourceMusic,
     isRandom,
     setIsRandom,
+    setIdSong,
   } = useMusicContext();
 
   const [music] = useState(() => new Audio(sourceMusic));
@@ -43,30 +44,32 @@ const Music: React.FC<MusicProps> = ({
   const artist = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchSourceMusic = async () => {
-      setIsPlaying(false);
+    if (song) {
+      const fetchSourceMusic = async () => {
+        setIsPlaying(false);
 
-      if (song) {
-        music.currentTime = 0;
-        loadMusic(song);
-        if (progress.current && currentTimeEl.current) {
-          progress.current.style.width = "0%";
-          currentTimeEl.current.textContent = "00:00";
+        if (song) {
+          music.currentTime = 0;
+          loadMusic(song);
+          if (progress.current && currentTimeEl.current) {
+            progress.current.style.width = "0%";
+            currentTimeEl.current.textContent = "00:00";
+          }
+          const musicSource = await axios.get(
+            `${import.meta.env.VITE_SERVER}/${song.path}`
+          );
+
+          if (musicSource.data.data) {
+            await setSourceMusic(musicSource.data.data["128"]);
+            await setIsPlaying(true);
+          } else {
+            await setSourceMusic("Not found");
+          }
         }
-        const musicSource = await axios.get(
-          `${import.meta.env.VITE_SERVER}/${song.path}`
-        );
-
-        if (musicSource.data.data) {
-          await setSourceMusic(musicSource.data.data["128"]);
-
-          await setIsPlaying(true);
-        } else {
-          await setSourceMusic("Not found");
-        }
-      }
-    };
-    fetchSourceMusic();
+      };
+      fetchSourceMusic();
+      setIdSong(song.path);
+    }
   }, [song]);
 
   useEffect(() => {
@@ -97,35 +100,40 @@ const Music: React.FC<MusicProps> = ({
   }
 
   function updateProgressBar() {
-    const { currentTime } = music;
-    const duration = song?.duration;
+    if (music.src) {
+      const { currentTime } = music;
+      const duration = song?.duration;
 
-    if (Math.floor(currentTime) === duration) {
-      onMusicIndex((prev) =>
-        isRandom ? Math.floor(Math.random() * songsLength) : ++prev
-      );
-    }
+      if (Math.floor(currentTime) === duration) {
+        onMusicIndex((prev) =>
+          isRandom ? Math.floor(Math.random() * songsLength) : ++prev
+        );
+      }
 
-    const progressPercent = (currentTime / duration) * 100;
-    if (progress.current) {
-      progress.current.style.width = `${progressPercent}%`;
-    }
+      const progressPercent = (currentTime / duration) * 100;
+      if (progress.current) {
+        progress.current.style.width = `${progressPercent}%`;
+      }
 
-    const formatTime = (time: number) =>
-      String(Math.floor(time)).padStart(2, "0");
+      const formatTime = (time: number) =>
+        String(Math.floor(time)).padStart(2, "0");
 
-    if (currentTimeEl.current) {
-      currentTimeEl.current.textContent = `${formatTime(
-        currentTime / 60
-      )}:${formatTime(currentTime % 60)}`;
-    }
+      if (currentTimeEl.current) {
+        currentTimeEl.current.textContent = `${formatTime(
+          currentTime / 60
+        )}:${formatTime(currentTime % 60)}`;
+      }
 
-    if (durationEl.current) {
-      durationEl.current.textContent = convertMinutesToTime(song.duration);
+      if (durationEl.current) {
+        durationEl.current.textContent = convertMinutesToTime(song.duration);
+      }
     }
   }
 
   function setProgressBar(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (!music.src) {
+      return;
+    }
     if (playerProgress.current) {
       const width = playerProgress.current.clientWidth;
       const clickX = e.nativeEvent.offsetX;
