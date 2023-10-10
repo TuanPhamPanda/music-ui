@@ -21,18 +21,16 @@ body {
     max-width: 100%;
     right: 68%;
     top: 20%;
-    height: 400px;
+    height: 400px !important;
     bottom: 20%;
     border-radius: 10px;
     background-color: transparent;
-    box-shadow: 4px 8px 8px 5px rgba(0, 0, 0, 0.3);
+    // box-shadow: 4px 8px 8px 5px rgba(0, 0, 0, 0.3);
     display: flex;
     visibility: visible;
+    overflow-y: scroll;
     opacity: 1;
     transition: visibility .5s, opacity 1s linear;
-    & div, iframe{
-      height: 100% !important;
-    }
   }
 
   @media only screen and (max-width: 1320px) {
