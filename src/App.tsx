@@ -83,6 +83,14 @@ function App() {
 
   return (
     <MusicProvider>
+      <ins
+        className="adsbygoogle"
+        style={{ display: "block" }}
+        data-ad-client="ca-pub-3355217321559680"
+        data-ad-slot="3928267649"
+        data-ad-format="auto"
+      />
+
       {songs.length > 0 ? (
         <Music
           isShowList={isShowList}

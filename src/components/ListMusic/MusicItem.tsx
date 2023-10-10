@@ -2,6 +2,8 @@ import { memo } from "react";
 import { Song } from "../../Song";
 import { useMusicContext } from "../../context/MusicProvider";
 import { convertMinutesToTime } from "../../utils/fn";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
 
 interface MusicItemProps {
   song: Song;
@@ -28,7 +30,9 @@ const MusicItem: React.FC<MusicItemProps> = ({
 
   return (
     <div className={`music-item ${song.path === idSong ? "active" : ""}`}>
-      <img onClick={handleChooseMusic} src={song.cover} alt="img" />
+      
+      <LazyLoadImage onClick={handleChooseMusic} src={song.cover} alt="img" />
+      
       <div className="music-description">
         <span
           className="text-capitalize"

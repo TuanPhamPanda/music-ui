@@ -183,6 +183,7 @@ const Music: React.FC<MusicProps> = ({
     <>
       <div className="background">
         <img ref={background} />
+
       </div>
       <div className={`container ${!song ? "skeleton" : ""}`}>
         {song && (
