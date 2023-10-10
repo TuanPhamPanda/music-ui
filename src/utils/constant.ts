@@ -1,2 +1,2 @@
-export const sizeIcon = 60;
-export const pausePlay = 70;
+export const sizeIcon: number = 60;
+export const pausePlay: number = 70;

@@ -20,6 +20,8 @@ const MusicLoading: React.FC<MusicLoadingProps> = ({
   } = icons;
 
   return (
+
+    
     <div className="music-loading">
       <div className="container">
         <div className="player-img">
