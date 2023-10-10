@@ -31,6 +31,9 @@ body {
     visibility: visible;
     opacity: 1;
     transition: visibility .5s, opacity 1s linear;
+    & div, iframe{
+      height: 100% !important;
+    }
   }
 
   @media only screen and (max-width: 1320px) {
