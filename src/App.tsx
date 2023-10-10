@@ -85,7 +85,6 @@ function App() {
     <MusicProvider>
       <ins
         className="adsbygoogle"
-        style={{ display: "block" }}
         data-ad-client="ca-pub-3355217321559680"
         data-ad-slot="3928267649"
         data-ad-format="auto"
