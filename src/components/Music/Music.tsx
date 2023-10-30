@@ -78,6 +78,7 @@ const Music: React.FC<MusicProps> = ({
       toast.error(`Không thể phát bài ${song.displayName}.`);
     } else if (sourceMusic?.startsWith("https://")) {
       music.src = sourceMusic;
+      setIsPlaying(true);
     }
   }, [sourceMusic]);
 
@@ -183,7 +184,6 @@ const Music: React.FC<MusicProps> = ({
     <>
       <div className="background">
         <img ref={background} />
-
       </div>
       <div className={`container ${!song ? "skeleton" : ""}`}>
         {song && (
